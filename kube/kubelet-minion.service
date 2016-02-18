@@ -1,0 +1,26 @@
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/mkdir -p /etc/kubernetes/manifests
+ExecStartPre=/opt/bin/wupiao ${KUBE_MASTER}:8080
+ExecStart=/usr/bin/kubelet \
+												--address=${COREOS_PUBLIC_IPV4} \
+												--hostname_override=${COREOS_PUBLIC_IPV4} \
+												--api-servers=${KUBE_MASTER}:8080 \
+												--allow-privileged=true \
+												--config=/etc/kubernetes/manifests \
+												--register-node=true
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=True
+MachineMetadata=kube=minion

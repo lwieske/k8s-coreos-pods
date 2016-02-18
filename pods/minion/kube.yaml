@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-minion
+spec:
+  hostNetwork: true
+  volumes:
+    - name: "etc-kubernetes"
+      hostPath:
+        path: "/etc/kubernetes"
+    - name: "usr"
+      hostPath:
+        path: "/usr"
+    - name: "lib64"
+      hostPath:
+        path: "/lib64"
+  containers:
+    - name: "kube-proxy"
+      image: "gcr.io/google_containers/hyperkube:v1.1.7"
+      command: [ "/hyperkube", "proxy" ]
+      args:
+        - "--master=http://__KUBE_MASTER__:8080"
+        - "--v=2"
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /etc/kubernetes
+          name: "etc-kubernetes"
+        - mountPath: /usr
+          name: "usr"
+        - mountPath: /lib64
+          name: "lib64"
+
+
+
+
+
+
+
+
+
+
+
+
+
+spec:
+  hostNetwork: true
+  containers:
+  - name: proxy
+    image: gcr.io/google_containers/hyperkube:v1.1.7
+    command:
+    - /hyperkube
+    - proxy
+    - --master=http://10.10.10.100:8080
+    securityContext:
+      privileged: true
